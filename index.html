@@ -1,0 +1,216 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#080522">
+<title>NOVA AI</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#080522;--panel:#171344;--text:#fff;--muted:#aaa5d0;--accent:#a78bfa}
+body{background:var(--bg);color:var(--text);font-family:Arial,sans-serif;min-height:100vh}
+body.light{--bg:#f1efff;--panel:#fff;--text:#21194a;--muted:#77718e}
+.screen{display:none;min-height:100vh;padding:24px 18px 100px}
+.screen.active{display:block}
+.center{display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
+.logo{font-size:42px;font-weight:900;letter-spacing:7px;background:linear-gradient(90deg,#b18aff,#49dfff);background-clip:text;color:transparent}
+.muted{color:var(--muted);font-size:13px}
+.orb{width:145px;height:145px;border-radius:50%;margin:30px auto;background:radial-gradient(circle at 35% 30%,#ff9ce5,#a33cff 35%,#161b83 68%,#00dfff);box-shadow:0 0 25px #855bff,0 0 65px #4224ff;animation:float 3s infinite ease-in-out}
+@keyframes float{50%{transform:translateY(-12px) scale(1.04)}}
+h2{font-size:24px;margin-bottom:12px}
+button{cursor:pointer;color:white}
+.btn{width:100%;padding:15px;border:0;border-radius:25px;margin-top:12px;background:linear-gradient(100deg,#5141ef,#a34cff);font-weight:bold;font-size:15px}
+.secondary{background:#302968}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:25px}
+.card{background:var(--panel);border:1px solid #ffffff20;border-radius:18px;padding:17px;margin-top:14px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0}
+.tile{min-height:110px;cursor:pointer}
+.tile b{display:block;margin:12px 0 7px}
+.tile small{color:var(--muted)}
+.emoji{font-size:25px}
+.inputbox{display:flex;gap:8px;background:#28215e;border-radius:16px;padding:9px;margin-top:15px}
+.inputbox input{background:none;border:0;outline:0;color:white;flex:1;min-width:0;padding:8px;font-size:14px}
+.inputbox button{border:0;background:#9367ff;border-radius:50%;width:40px;height:40px}
+.bottom{position:fixed;bottom:0;left:0;width:100%;display:flex;justify-content:space-around;background:#100c39;border-top:1px solid #ffffff20;padding:13px 2px}
+.bottom button{background:none;border:0;color:#c8baff;font-size:20px}
+.bottom span{display:block;font-size:10px;margin-top:4px}
+.msg{padding:13px;background:#28215e;border-radius:14px;margin-top:12px;line-height:1.5;overflow-wrap:anywhere}
+textarea{width:100%;padding:13px;border-radius:12px;background:#28215e;color:white;border:1px solid #ffffff30;margin-top:12px}
+.wave{display:flex;align-items:center;justify-content:center;gap:5px;height:65px}
+.wave i{height:20px;width:4px;background:#a78bfa;border-radius:5px;animation:wave .8s infinite alternate}
+.wave i:nth-child(2n){animation-delay:.3s}
+@keyframes wave{to{height:48px}}
+</style>
+</head>
+<body>
+
+<section id="login" class="screen active center">
+ <div class="orb"></div>
+ <div class="logo">NOVA</div>
+ <p class="muted">YOUR PERSONAL AI UNIVERSE</p>
+ <div style="width:100%;margin-top:65px">
+  <button class="btn" onclick="enter()">Continue as Guest</button>
+ </div>
+ <p class="muted" style="margin-top:20px">Intelligent • Creative • Personal</p>
+</section>
+
+<section id="home" class="screen">
+ <div class="header">
+  <div><div class="logo" style="font-size:29px">NOVA</div><p class="muted">Your AI Universe</p></div>
+  <button class="btn secondary" style="width:auto;margin:0" onclick="toggleTheme()">🌙</button>
+ </div>
+ <div class="card">
+  <p class="muted">NOVA AI • READY</p>
+  <h2 style="margin-top:12px">Hello! What can I do for you today?</h2>
+  <div class="orb" style="width:95px;height:95px"></div>
+  <div class="inputbox">
+   <input id="homeInput" placeholder="Ask anything...">
+   <button onclick="askHome()">↑</button>
+  </div>
+ </div>
+ <div class="grid">
+  <div class="card tile" onclick="show('chat')"><div class="emoji">💬</div><b>AI Chat</b><small>Talk with NOVA</small></div>
+  <div class="card tile" onclick="show('study')"><div class="emoji">📚</div><b>Study Zone</b><small>Learn every day</small></div>
+  <div class="card tile" onclick="show('image')"><div class="emoji">🎨</div><b>AI Images</b><small>Creative studio</small></div>
+  <div class="card tile" onclick="show('tools')"><div class="emoji">⚡</div><b>Smart Tools</b><small>Offline utilities</small></div>
+ </div>
+ <div class="card" onclick="show('voice')">🎙️ <b>Open Voice Assistant</b></div>
+ <h3 style="margin-top:22px">Recent History</h3>
+ <div id="history" class="card">No chats yet</div>
+</section>
+
+<section id="chat" class="screen">
+ <div class="header"><h2>💬 NOVA Chat</h2><button class="btn secondary" style="width:auto;margin:0" onclick="show('home')">Home</button></div>
+ <div id="messages"></div>
+ <div class="inputbox"><input id="chatInput" placeholder="Type your message..."><button onclick="chatSend()">↑</button></div>
+ <p class="muted" style="margin-top:10px">AI connection will be added in the next step.</p>
+</section>
+
+<section id="voice" class="screen center">
+ <h2>🎙️ NOVA Voice</h2>
+ <p id="voiceStatus" class="muted">Ready to listen</p>
+ <div class="orb"></div>
+ <div class="wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+ <button class="btn" onclick="listen()">🎙️ Start Speaking</button>
+ <p id="voiceText" class="muted" style="margin:15px"></p>
+ <button class="btn secondary" onclick="show('home')">Back Home</button>
+</section>
+
+<section id="study" class="screen">
+ <h2>📚 Study Zone</h2>
+ <div class="grid">
+  <div class="card tile" onclick="study('English Learning')">🇬🇧<b>English</b></div>
+  <div class="card tile" onclick="study('Mathematics')">➗<b>Maths</b></div>
+  <div class="card tile" onclick="study('Science')">🔬<b>Science</b></div>
+  <div class="card tile" onclick="study('Quiz')">📝<b>Quiz</b></div>
+ </div>
+ <div id="studyResult" class="card">Choose a subject.</div>
+ <button class="btn secondary" onclick="show('home')">Back</button>
+</section>
+
+<section id="image" class="screen">
+ <h2>🎨 AI Image Creator</h2>
+ <p class="muted">Create art from your imagination</p>
+ <textarea id="imagePrompt" placeholder="Describe your image..." rows="4"></textarea>
+ <button class="btn" onclick="imageCreate()">Create Image</button>
+ <div id="imageResult" class="card">Your artwork will appear here after image generation is connected.</div>
+ <button class="btn secondary" onclick="show('home')">Back</button>
+</section>
+
+<section id="tools" class="screen">
+ <h2>⚡ Smart Tools</h2>
+ <div class="card">
+  <h3>🧮 Calculator</h3>
+  <input id="calc" placeholder="Example: 25*5" style="width:100%;padding:13px;margin-top:15px">
+  <button class="btn" onclick="calculate()">Calculate</button>
+  <p id="calcResult" style="margin-top:12px"></p>
+ </div>
+ <div class="card">
+  <h3>📝 Quick Notes</h3>
+  <textarea id="notes" rows="5" placeholder="Write your notes..."></textarea>
+  <button class="btn" onclick="saveNotes()">Save Notes</button>
+  <p id="noteStatus" class="muted"></p>
+ </div>
+ <button class="btn secondary" onclick="show('home')">Back</button>
+</section>
+
+<nav class="bottom">
+ <button onclick="show('home')">⌂<span>Home</span></button>
+ <button onclick="show('chat')">▤<span>Chat</span></button>
+ <button onclick="show('study')">▣<span>Study</span></button>
+ <button onclick="show('voice')">◉<span>Voice</span></button>
+ <button onclick="show('tools')">⚙<span>Tools</span></button>
+</nav>
+
+<script>
+function show(id){
+ document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+ document.getElementById(id).classList.add('active');
+}
+function enter(){show('home')}
+function toggleTheme(){document.body.classList.toggle('light')}
+function historyAdd(q){
+ let h=JSON.parse(localStorage.getItem('novaHistory')||'[]');
+ h.unshift(q);h=h.slice(0,8);
+ localStorage.setItem('novaHistory',JSON.stringify(h));
+ document.getElementById('history').innerHTML=h.map(x=>'<div class="msg">'+safe(x)+'</div>').join('');
+}
+function safe(s){
+ return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function askHome(){
+ let q=document.getElementById('homeInput').value.trim();
+ if(!q)return;
+ document.getElementById('chatInput').value=q;
+ show('chat');chatSend();
+ document.getElementById('homeInput').value='';
+}
+function chatSend(){
+ let q=document.getElementById('chatInput').value.trim();
+ if(!q)return;
+ document.getElementById('chatInput').value='';
+ document.getElementById('messages').innerHTML+='<div class="msg"><b>You:</b> '+safe(q)+'</div><div class="msg">NOVA AI connection is coming in the next step.</div>';
+ historyAdd(q);
+}
+function listen(){
+ let SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+ if(!SR){document.getElementById('voiceStatus').textContent='Speech recognition not supported. Try Chrome.';return}
+ let r=new SR();r.lang='ta-IN';
+ r.onstart=()=>document.getElementById('voiceStatus').textContent='Listening...';
+ r.onresult=e=>{
+  let t=e.results[0][0].transcript;
+  document.getElementById('voiceText').textContent=t;
+  document.getElementById('chatInput').value=t;
+  show('chat');chatSend();
+ };
+ r.onerror=()=>document.getElementById('voiceStatus').textContent='Please try again.';
+ r.start();
+}
+function study(s){
+ document.getElementById('studyResult').textContent=s+' selected. AI study tutor will be connected next.';
+}
+function imageCreate(){
+ let p=document.getElementById('imagePrompt').value.trim();
+ if(!p)return;
+ document.getElementById('imageResult').textContent='Image API not connected yet. Your prompt: '+p;
+}
+function calculate(){
+ try{
+  let x=document.getElementById('calc').value;
+  if(!/^[0-9+\-*/().%\s]+$/.test(x))throw Error();
+  let n=Function('"use strict";return ('+x+')')();
+  if(!Number.isFinite(n))throw Error();
+  document.getElementById('calcResult').textContent='Result: '+n;
+ }catch(e){document.getElementById('calcResult').textContent='Invalid calculation'}
+}
+function saveNotes(){
+ localStorage.setItem('novaNotes',document.getElementById('notes').value);
+ document.getElementById('noteStatus').textContent='Saved successfully!';
+}
+document.getElementById('notes').value=localStorage.getItem('novaNotes')||'';
+let old=JSON.parse(localStorage.getItem('novaHistory')||'[]');
+if(old.length)document.getElementById('history').innerHTML=old.map(x=>'<div class="msg">'+safe(x)+'</div>').join('');
+</script>
+</body>
+</html>
